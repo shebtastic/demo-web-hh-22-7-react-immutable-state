@@ -1,5 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { useImmer } from "use-immer";
+
 import Episode from "../Episode";
 import Season from "../Season";
 
@@ -19,23 +21,59 @@ const StyledShow = styled.div`
 `;
 
 export default function Show({ initialSeasons = [] }) {
-  const [seasons, setSeasons] = useState(initialSeasons);
+  const [seasons, setSeasons] = useImmer(initialSeasons);
 
   function handleToggleHasSeen(seasonNumber, episodeNumber) {
-    setSeasons((prevSeasons) => {
-      const season = prevSeasons.find(({ number }) => number === seasonNumber);
+    // setSeasons((prevSeasons) => {
+    //   const season = prevSeasons.find(({ number }) => number === seasonNumber);
 
+    //   const episode = season.episodes.find(
+    //     ({ number }) => number === episodeNumber
+    //   );
+
+    //   episode.hasSeen = !episode.hasSeen; //mutation
+
+    //   console.log(prevSeasons);
+
+    //   return prevSeasons; //is das selbe object, wird überprüft mit `Object.is`
+    //   //updated nicht weil: bail out -> performance optimierung
+    // });
+
+    // setSeasons((prevSeasons) => {
+    //   return prevSeasons.map((season) => {
+    //     if (season.number === seasonNumber) {
+    //       //dinge verändern
+    //       return { //shallow copy
+    //         ...season,
+    //         episodes: season.episodes.map((episode) => {
+    //           if (episode.number === episodeNumber) {
+    //             //dinge verändern
+    //             return {
+    //               ...episode,
+    //               hasSeen: !episode.hasSeen,
+    //             };
+    //           } else {
+    //             return episode;
+    //           }
+    //         }),
+    //       };
+    //     } else {
+    //       return season;
+    //     }
+    //   });
+    // });
+
+    setSeasons((draft) => {
+      const season = draft.find((season) => season.number === seasonNumber);
       const episode = season.episodes.find(
-        ({ number }) => number === episodeNumber
+        (episode) => episode.number === episodeNumber
       );
 
       episode.hasSeen = !episode.hasSeen;
-
-      console.log(prevSeasons);
-
-      return prevSeasons;
     });
   }
+
+  console.log(seasons);
 
   return (
     <StyledShow>
